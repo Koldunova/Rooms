@@ -5,10 +5,13 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import by.koldunova.database.reader.DbReader;
 import by.koldunova.entity.MyIp;
@@ -28,23 +31,21 @@ public class MainServlet extends HttpServlet {
         String ip = ipUserInf.getIp();
         String country = ipUserInf.getCountry();
 
-        PrintWriter pw = resp.getWriter();
-;
-        pw.println("<H1> Your ip:" + ip + " Your country: " + country + "</H1>");
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/jsp/index.jsp");
+
+        req.setAttribute("ip", ip);
+        req.setAttribute("country", country);
 
         try {
-            ArrayList<Room> rooms = DbReader.readRooms();
-
-            for (Room room : rooms) {
-                pw.println("<H1> " + room.toString() + "</H1>");
-            }
+            req.setAttribute("rooms", DbReader.readRooms());
         } catch (SQLException e) {
-            pw.println("<H1> SQLException "+e.getMessage()+" </H1>");
+            // pw.println("<H1> SQLException "+e.getMessage()+" </H1>");
         } catch (ClassNotFoundException e) {
-            pw.println("<H3> ClassNotFoundException "+e.getMessage()+" </H3>");
+            // pw.println("<H3> ClassNotFoundException "+e.getMessage()+" </H3>");
         }
 
-        pw.println("<H1> Hi! </H1>");
+        dispatcher.forward(req, resp);
+
     }
 
 }
